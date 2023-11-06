@@ -1,0 +1,50 @@
+{
+  "name": "trade_tracker_backend",
+  "version": "1.0.0",
+  "description": "backend application for tracking and analysing  trade performance",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "dbmigrate": "npx sequelize-cli db:migrate",
+    "dbmigrateundo": "npx sequelize-cli db:migrate:undo",
+    "dbseed": "npx sequelize-cli db:seed:all",
+    "dbseedundo": "npx sequelize-cli db:seed:undo:all"
+  },
+  "keywords": [
+    "trade",
+    "stocks",
+    "financial",
+    "stock-market",
+    "express",
+    "node",
+    "javascript",
+    "sequelize",
+    "postgresql"
+  ],
+  "author": "James Orr",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.1",
+    "helmet": "^7.0.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.11.2",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.32.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
