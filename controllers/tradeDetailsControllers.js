@@ -60,33 +60,33 @@ module.exports = {
   async getTradeDetailsByTradeId(req, res, next) {
     // store user id to be used in identifying trade
     const userId = req.userId;
-  
+
     // store trade id to be used in identifying trade
     const tradeId = req.params.id;
-  
+
     try {
       const tradeWithDetails = await Trade.findOne({
         where: { user_id: userId, id: tradeId },
         include: [
           {
             model: TradeDetail,
-            as: "trade_details", 
+            as: "trade_details",
             order: [["execution_time", "ASC"]],
           },
         ],
       });
-  
+
       if (!tradeWithDetails) {
         return next(new AppError("No trade details found", 400));
       }
-  
+
       return send200Ok(res, "Trade Details Found", { tradeWithDetails });
     } catch (e) {
       return res.status(500).send({
         message: "Error Occurred",
       });
     }
-  }, 
+  },
   async addTradeDetailsFromExcel(req, res, next) {
     //if no file is uploaded, return error
     if (!req.file) {
@@ -258,12 +258,11 @@ module.exports = {
         tradeDetails,
         transaction
       );
-      // const trade = await Trade.findOne({
-      //   where: {
-      //     id: tradeDetails.trade_id,
-      //   },
-      //   transaction,
-      // });
+
+      if (!trade || trade.user_id !== userId) {
+        await transaction.rollback();
+        return next(new AppError("Unauthorized access", 403));
+      }
 
       //fetch all of the tradedetails that are associated with the trade so that we can update the trade where required
       const linkedTradeDetails = await findAllTradeDetailsAssociatedWithTrade(
@@ -291,14 +290,6 @@ module.exports = {
 
         return 0;
       });
-
-
-      // const linkedTradeDetails = await TradeDetail.findAll({
-      //   where: {
-      //     trade_id: tradeDetails.trade_id,
-      //   },
-      //   transaction,
-      // });
 
       // 1. Update Trade net profit/loss if 'net_proceeds' has been updated
       if (updateFields.includes("net_proceeds")) {
@@ -368,6 +359,11 @@ module.exports = {
         tradeDetails,
         transaction
       );
+
+      if (associatedTrade.user_id !== userId) {
+        await transaction.rollback();
+        return next(new AppError("Unauthorized access", 403));
+      }
 
       //carry out logic to update the trade associated with the trade details before deleting the trade details
       //update shares owned by the trade

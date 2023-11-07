@@ -111,6 +111,9 @@ module.exports = {
           ["open_date", "ASC"],
           ["open_time", "ASC"],
         ],
+        where: {
+          user_id: req.userId,
+        },
       };
 
       if (startDate && endDate && startDate !== "" && endDate !== "") {
@@ -120,9 +123,10 @@ module.exports = {
         trades = await Trade.findAll({
           ...tradeQueryOptions,
           where: {
-            open_date: {
-              [Op.between]: [startDate, endDate],
-            },
+            [Op.and]: [
+              { open_date: { [Op.between]: [startDate, endDate] } },
+              { user_id: req.userId },
+            ],
           },
         });
       } else {
@@ -169,9 +173,18 @@ module.exports = {
         new AppError("Tags to add cannot be empty or not an array", 400)
       );
     }
-    //create a squelize transaction. This will allow for many tags to be added at once
-    const transaction = await TradeTag.sequelize.transaction();
     try {
+      // First, verify that the trade belongs to the user
+      const trade = await Trade.findByPk(req.tradeId);
+      if (!trade) {
+        return next(new AppError("Trade not found", 404));
+      }
+      if (trade.user_id !== req.userId) {
+        return next(new AppError("Unauthorized access", 403));
+      }
+      //create a squelize transaction. This will allow for many tags to be added at once
+      const transaction = await TradeTag.sequelize.transaction();
+
       for (let i = 0; i < tagsToAdd.length; i++) {
         //find or create a tradetag entry for each trade and tag
         const [tradeTag, created] = await TradeTag.findOrCreate({
@@ -211,9 +224,18 @@ module.exports = {
         new AppError("Tag to remove cannot be empty or not an array", 400)
       );
     }
-    //create a squelize transaction. This will allow for many tags to be deleted at once
-    const transaction = await TradeTag.sequelize.transaction();
     try {
+      const trade = await Trade.findByPk(req.tradeId);
+      if (!trade) {
+        return next(new AppError("Trade not found", 404));
+      }
+      if (trade.user_id !== req.userId) {
+        return next(new AppError("Unauthorized access", 403));
+      }
+
+      //create a squelize transaction. This will allow for many tags to be deleted at once
+      const transaction = await TradeTag.sequelize.transaction();
+
       for (let tagId of tagsToRemove) {
         //find tradeTag entry for the trade and tag
         const tradeTag = await TradeTag.findOne({
