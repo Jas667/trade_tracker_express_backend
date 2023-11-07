@@ -251,14 +251,15 @@ module.exports = {
   },
   async deleteUser(req, res, next) {
     try {
-      const userId = req.userId;
+      const id = req.userId;
 
-      if (!userId) {
+      if (!id) {
         return next(new AppError("You cannot delete this user", 403));
       }
-      const user = await User.destroy({ where: { userId } });
+      const user = await User.destroy({ where: { id } });
       return send204Deleted(res);
     } catch (e) {
+      console.log(e);
       return next(new AppError("Error deleting user", 500));
     }
   },
