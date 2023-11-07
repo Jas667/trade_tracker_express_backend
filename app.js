@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const swaggerOptions = require("./swaggerOptions");
 const { errorHandler } = require("./utils/errorHandler");
-const { userLimiter, standardLimiter } = require("./middleware/rateLimiter");
+const { standardLimiter } = require("./middleware/rateLimiter");
 
 dotenv.config();
 
@@ -63,10 +63,10 @@ const tradeTagRouter = require("./routes/tradeTag");
 const refreshRouter = require("./routes/refresh");
 
 // Use Routes
-app.use("/user", userLimiter, userRouter);
 
 app.use(standardLimiter);
 
+app.use("/user", userRouter);
 app.use("/trade", tradeRouter);
 app.use("/tradedetails", tradeDetailsRouter);
 app.use("/image", imageRouter);

@@ -27,7 +27,7 @@ module.exports = {
         return next(new AppError("You cannot view this user", 403));
       }
       const user = await User.findByPk(req.userId, {
-        attributes: ["id", "username", "first_name", "profile_picture"],
+        attributes: ["id", "username", "first_name", "last_name", "profile_picture", "email"],
       });
       if (!user) {
         return next(new AppError("User not found", 400));
@@ -95,7 +95,7 @@ module.exports = {
       }
 
       //hash the password
-      const saltRounds = 10;
+      const saltRounds = parseInt(process.env.SALT_ROUNDS);
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       //create the user
       const createdUser = await User.create({
@@ -260,6 +260,39 @@ module.exports = {
       return send204Deleted(res);
     } catch (e) {
       return next(new AppError("Error deleting user", 500));
+    }
+  },
+  async updatePassword(req, res, next) { 
+    try {
+      const userId = req.userId;
+      console.log(userId);
+      const { oldPassword, newPassword } = req.body;
+      if (!userId) {
+        return next(new AppError("You cannot update this user", 403));
+      }
+      if (!oldPassword || !newPassword) {
+        return next(new AppError("Missing fields", 400));
+      }
+      if (newPassword.length < 8) {
+        return next(
+          new AppError("Password must be at least 8 characters", 400)
+        );
+      }
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return next(new AppError("User not found", 400));
+      }
+      const comparedPassword = await bcrypt.compare(oldPassword, user.password);
+      if (!comparedPassword) {
+        return next(new AppError("Incorrect password", 400));
+      }
+      const saltRounds = parseInt(process.env.SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+      await User.update({ password: hashedPassword }, { where: { id: userId } });
+      return send200Ok(res, "Password updated");
+    } catch (e) {
+      console.log(e);
+      return next(new AppError("Error updating password", 500));
     }
   },
 };

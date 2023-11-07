@@ -5,6 +5,7 @@ const router = express.Router();
 const userController = require("../controllers/userControllers");
 const { setContext } = require("../middleware/setContext");
 const { isUserAuthenticated } = require("../authorisation/isUserAuthenticated");
+const {userLimiter} = require("../middleware/rateLimiter");
 
 /**
  * @swagger
@@ -117,7 +118,7 @@ router.get("/", isUserAuthenticated, setContext, userController.getUserById);
  *      '500':
  *        description: Error creating user or Internal server error occurred
  */
-router.post("/register", userController.registerUser);
+router.post("/register", userLimiter, userController.registerUser);
 
 
 /**
@@ -173,7 +174,7 @@ router.post("/register", userController.registerUser);
  *       **Password**: adminadmin
  */
 
-router.post("/login", userController.loginUser);
+router.post("/login", userLimiter, userController.loginUser);
 
 /**
  * @swagger
@@ -263,6 +264,62 @@ router.post("/logout", isUserAuthenticated, userController.logoutUser);
  */
 
 router.put("/update/", isUserAuthenticated, setContext, userController.updateUser);
+
+/**
+* @swagger
+* paths:
+*  /user/password:
+*    put:
+*      security:
+*        - bearerAuth: []
+*      tags:
+*        - Users
+*      summary: Update the password of a user
+*      description: Allow a user to update their password by providing the old and new password.
+*      requestBody:
+*        description: Required old and new password fields
+*        required: true
+*        content:
+*          application/json:
+*            schema:
+*              type: object
+*              required:
+*                - oldPassword
+*                - newPassword
+*              properties:
+*                oldPassword:
+*                  type: string
+*                  format: password
+*                  description: The current password that needs to be updated.
+*                  example: "oldPassword123"
+*                newPassword:
+*                  type: string
+*                  format: password
+*                  description: The new password, must be at least 8 characters long.
+*                  example: "newSecurePassword123"
+*      responses:
+*        '200':
+*          description: Password updated successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  message:
+*                    type: string
+*                    example: "Password updated"
+*        '400':
+*          description: Bad request, missing fields, or password constraints not met
+*        '401':
+*          description: Access denied due to lack of authentication token
+*        '403':
+*          description: Forbidden, cannot update password for the given user
+*        '429':
+*          description: Too many requests
+*        '500':
+*          description: Error updating password or Internal server error occurred
+*/
+router.put("/password", isUserAuthenticated, setContext, userController.updatePassword);
 
 /**
  * @swagger

@@ -10,7 +10,7 @@ const userLimiter = rateLimit({
 
 const standardLimiter = rateLimit({
       windowMs: 3600 * 1000, // 1 hour
-      limit: 1000, // 100 requests
+      limit: 500, // 500 requests
       message: {message: "Too many requests, please try again later."},
       standardHeaders: "draft-7",
       legacyHeaders: false,
