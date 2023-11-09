@@ -57,11 +57,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      hooks: {
-        beforeCreate: (user, options) => {
-          user.id = uuidv4();
-        },
-      },
       modelName: "Tag",
       indexes: [
         {
@@ -70,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
           name: "user_id_tag_name_unique",
         },
       ],
+      hooks: {
+        beforeCreate: (user, options) => {
+          user.id = uuidv4();
+        },
+      },
     }
   );
   return Tag;
