@@ -78,10 +78,14 @@ app.use("/refresh", refreshRouter);
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
+// Serve any static files for React app
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // Handle React routing, return all requests to React app
 app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
