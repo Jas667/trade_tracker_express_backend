@@ -95,6 +95,11 @@ module.exports = {
     //saved file path
     const filePath = req.file.path;
 
+    if (req.userId === "5cc82ad8-3763-491c-a792-99411fbcb8ef") {
+      deleteFile(filePath);
+      return next(new AppError("Uploads not available for test users", 403));
+    }
+
     try {
       const extname = path.extname(filePath); // This gives you the file extension, e.g., '.csv' or '.xlsx'
 
