@@ -57,8 +57,8 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notNull: { msg: "Tag name cannot be null" },
           len: {
-            args: [3, 20],
-            msg: "Tag name must be between 3 and 20 characters",
+            args: [3, 40],
+            msg: "Tag name must be between 3 and 40 characters",
           },
         },
       },

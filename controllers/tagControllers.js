@@ -63,7 +63,6 @@ module.exports = {
         createdTagIds: createdTagIds,
       });
     } catch (e) {
-      console.log(e);
       await transaction.rollback();
       return next(new AppError("Error creating tag", 500));
     }
