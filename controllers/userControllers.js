@@ -78,6 +78,13 @@ module.exports = {
         );
       }
 
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      return res.status(401).send("Registration disabled for testing purposes");
+
+
       const user = await User.findOne({
         //check if user with the same username or email already exists
         where: {
