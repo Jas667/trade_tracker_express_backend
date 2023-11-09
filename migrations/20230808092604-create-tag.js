@@ -18,7 +18,6 @@ module.exports = {
       },
       tag_name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       createdAt: {
@@ -29,6 +28,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+    });
+    await queryInterface.addIndex("Tags", ["user_id", "tag_name"], {
+      unique: true,
+      name: "tags_unique_user_id_tag_name",
     });
   },
   async down(queryInterface, Sequelize) {

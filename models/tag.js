@@ -53,14 +53,6 @@ module.exports = (sequelize, DataTypes) => {
       tag_name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        validate: {
-          notNull: { msg: "Tag name cannot be null" },
-          len: {
-            args: [3, 40],
-            msg: "Tag name must be between 3 and 40 characters",
-          },
-        },
       },
     },
     {
@@ -71,6 +63,13 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       modelName: "Tag",
+      indexes: [
+        {
+          unique: true,
+          fields: ["user_id", "tag_name"],
+          name: "user_id_tag_name_unique",
+        },
+      ],
     }
   );
   return Tag;
