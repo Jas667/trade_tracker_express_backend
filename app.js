@@ -15,10 +15,9 @@ dotenv.config();
 const app = express();
 
 //this is set to allow for the use of rate limiter in production when deployed to Railway (or similar services)
-app.set('trust proxy', 1)
+app.set("trust proxy", 1);
 
 const PORT = process.env.PORT || 3000;
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,12 +37,15 @@ app.use("/userImageUploads", function (req, res, next) {
   const origin = req.get("Origin");
 
   //Browser isnt sending origin header due to being on same origin localhost for development. Add if statement during production. Comment out the if statment if you want to test the app locally.
-  
-  // if (allowedEmbedOrigins.includes(origin)) {
-    // res.header("Access-Control-Allow-Origin", origin);
+
+  console.log("Origin:", origin);
+  console.log("Allowed Embed Origins:", allowedEmbedOrigins);
+
+  if (allowedEmbedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
     res.header("Cross-Origin-Embedder-Policy", "none");
     res.header("Cross-Origin-Resource-Policy", "cross-origin");
-  // }
+  }
 
   next();
 });
@@ -87,13 +89,12 @@ app.use("/refresh", refreshRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // Serve any static files for React app
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, "dist")));
 
 // Handle React routing, return all requests to React app
-app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
