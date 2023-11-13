@@ -99,6 +99,7 @@ module.exports = {
       "..",
       "public",
       "userImageUploads",
+      req.userId.toString(),
       req.file.filename
     );
 
@@ -143,6 +144,7 @@ module.exports = {
         "..",
         "public",
         "userImageUploads",
+        req.userId.toString(),
         image.image_url
       );
       //remove image from the DB
