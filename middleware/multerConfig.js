@@ -3,8 +3,6 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 
-const fs = require("fs");
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const userFolderPath = path.join(
