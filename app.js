@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = express();
 
-//this is set to allow for the use of Rails' reverse proxy
+//this is set to allow for the use of rate limiter in production when deployed to Railway (or similar services)
 app.set('trust proxy', 1)
 
 const PORT = process.env.PORT || 3000;
@@ -66,7 +66,7 @@ const commentRouter = require("./routes/comment");
 const tagRouter = require("./routes/tag");
 const tradeTagRouter = require("./routes/tradeTag");
 const refreshRouter = require("./routes/refresh");
-const ipRouter = require("./routes/proxy");
+// const ipRouter = require("./routes/proxy");
 
 // Use Routes
 
@@ -80,7 +80,7 @@ app.use("/comment", commentRouter);
 app.use("/tag", tagRouter);
 app.use("/tradetag", tradeTagRouter);
 app.use("/refresh", refreshRouter);
-app.use("/ip", ipRouter)
+// app.use("/ip", ipRouter)
 
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
