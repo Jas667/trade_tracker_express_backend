@@ -37,12 +37,12 @@ const allowedEmbedOrigins = (process.env.ALLOWED_EMBED_ORIGIN || "").split(",");
 app.use("/userImageUploads", function (req, res, next) {
   const origin = req.get("Origin");
 
-  //Browser isnt sending origin header due to being on same origin localhost for development. Add if statement during production
+  //Browser isnt sending origin header due to being on same origin localhost for development. Add if statement during production. Comment out the if statment if you want to test the app locally.
   
-  // if (allowedEmbedOrigins.includes(origin)) {
+  if (allowedEmbedOrigins.includes(origin)) {
     res.header("Cross-Origin-Embedder-Policy", "none");
     res.header("Cross-Origin-Resource-Policy", "cross-origin");
-  // }
+  }
 
   next();
 });
