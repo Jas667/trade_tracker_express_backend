@@ -24,7 +24,7 @@ module.exports = {
       if (!image) {
         return next(new AppError("Image not found", 400));
       }
-      return send200Ok(res, "Image found", { image: image });
+      return send200Ok(res, "Image found", { image: image, userId: req.userId });
     } catch (e) {
       return next(new AppError("Error getting image", 500));
     }
@@ -43,7 +43,7 @@ module.exports = {
       if (!images) {
         return next(new AppError("No images found", 400));
       }
-      return send200Ok(res, "Images found", { imnages: images });
+      return send200Ok(res, "Images found", { imnages: images, userId: req.userId });
     } catch (e) {
       return next(new AppError("Error getting images", 500));
     }
