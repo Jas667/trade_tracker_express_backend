@@ -6,7 +6,21 @@ Currently the application is set to work with postgresql, but can be extended to
 
 Designed to accept a csv file from TradeZero in order to populate the database with trades. The csv file can be uploaded using the API for testing.
 
-The app is currently deployed to Railway.app and is set up to work as such. The older version of the app was designed to run on my localhost, which is what most of the documentation below is based on.
+The app is currently deployed to Railway.app and is set up to work as such. The older version of the app was designed to run on my localhost, which is what most of the documentation below is based on. See the demo section below for more information.
+
+## Frontend Example
+
+I built a frontend for this application using React. You can find the code for it here:
+
+- **Trade Tracker Frontend**: [Explore Frontend Repository](https://github.com/Jas667/trade_tracker_frontend)
+
+## Demo
+
+- **Live Application:** [Trade Tracker on Railway](https://tradetrackerfrontend-production.up.railway.app/)
+- **Test Account:**
+  - Username: `TestUser`
+  - Password: `adminadmin`
+
 ## Getting Started
 
 The instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
