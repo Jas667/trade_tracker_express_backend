@@ -6,6 +6,7 @@ Currently the application is set to work with postgresql, but can be extended to
 
 Designed to accept a csv file from TradeZero in order to populate the database with trades. The csv file can be uploaded using the API for testing.
 
+The app is currently deployed to Railway.app and is set up to work as such. The older version of the app was designed to run on my localhost, which is what most of the documentation below is based on.
 ## Getting Started
 
 The instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
