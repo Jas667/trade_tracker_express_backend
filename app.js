@@ -39,11 +39,11 @@ app.use("/userImageUploads", function (req, res, next) {
 
   //Browser isnt sending origin header due to being on same origin localhost for development. Add if statement during production. Comment out the if statment if you want to test the app locally.
   
-  if (allowedEmbedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
+  // if (allowedEmbedOrigins.includes(origin)) {
+    // res.header("Access-Control-Allow-Origin", origin);
     res.header("Cross-Origin-Embedder-Policy", "none");
     res.header("Cross-Origin-Resource-Policy", "cross-origin");
-  }
+  // }
 
   next();
 });
