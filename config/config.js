@@ -1,3 +1,6 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 // config.js
 module.exports = {
   development: {
