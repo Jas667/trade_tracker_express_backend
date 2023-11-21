@@ -1,0 +1,37 @@
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+module.exports = {
+  // async..await is not allowed in global scope, must use a wrapper
+  async passwordResetEmail(email, link) {
+    try {
+      const info = await transporter.sendMail({
+        from: {
+          name: "Trade Tracker",
+          address: process.env.EMAIL_USER,
+        },
+        to: email, // list of receivers
+        subject: "Password Reset", // Subject line
+        text: "Password reset link for Trade Tracker", // plain text body
+        html: `<p>Below is the requested link to change your password. It will be active for 30 minutes.</p></br><p>${link}</p>`, // html body
+      });
+      if (info.accepted.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  },
+};

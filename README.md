@@ -77,7 +77,29 @@ You can also create your own user using the swagger user/register User route.
 
 ## Environment Variables
 
-Currently the .env file has a token_secret variable set to 'secret'. This is only for testing purposes. You should change this to a more secure value and not commit it to github.
+Currently the .env file should be set with the following variables. The values provided are only examples, and should be changed to suit your needs.
+
+``````
+TOKEN_SECRET=secret
+REFRESH_TOKEN_SECRET=secret
+PASSWORD_RESET_TOKEN_SECRET=secret
+CORS_ORIGIN=http://localhost:5173
+ALLOWED_EMBED_ORIGIN=http://localhost:5173
+
+SALT_ROUNDS=10
+```
+
+# for database
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=trade_tracker_dev
+DB_HOST=127.0.0.1
+DB_DIALECT=postgres
+```
+#for nodemailer
+EMAIL_USER=your email
+EMAIL_PASSWORD=your password
+```
 
 ## Origin Headers in Development
 

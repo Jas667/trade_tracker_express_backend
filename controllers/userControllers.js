@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 
 const { AppError } = require("../utils/errorHandler");
 
+const { passwordResetEmail } = require("../config/nodemailer");
+
 const {
   send201Created,
   send200Ok,
@@ -15,19 +17,24 @@ const {
 } = require("../utils/responses");
 
 module.exports = {
-
-
   async getUserById(req, res, next) {
     try {
       //check if user is the same as the one logged in
       // if (req.params.id !== req.userId) {
       //   return next(new AppError("You cannot view this user", 403));
       // }
-      if (!req.userId) { 
+      if (!req.userId) {
         return next(new AppError("You cannot view this user", 403));
       }
       const user = await User.findByPk(req.userId, {
-        attributes: ["id", "username", "first_name", "last_name", "profile_picture", "email"],
+        attributes: [
+          "id",
+          "username",
+          "first_name",
+          "last_name",
+          "profile_picture",
+          "email",
+        ],
       });
       if (!user) {
         return next(new AppError("User not found", 400));
@@ -83,7 +90,6 @@ module.exports = {
       //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
       //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
       return res.status(401).send("Registration disabled for testing purposes");
-
 
       const user = await User.findOne({
         //check if user with the same username or email already exists
@@ -270,7 +276,7 @@ module.exports = {
       return next(new AppError("Error deleting user", 500));
     }
   },
-  async updatePassword(req, res, next) { 
+  async updatePassword(req, res, next) {
     try {
       const userId = req.userId;
       console.log(userId);
@@ -296,11 +302,37 @@ module.exports = {
       }
       const saltRounds = parseInt(process.env.SALT_ROUNDS);
       const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-      await User.update({ password: hashedPassword }, { where: { id: userId } });
+      await User.update(
+        { password: hashedPassword },
+        { where: { id: userId } }
+      );
       return send200Ok(res, "Password updated");
     } catch (e) {
       console.log(e);
       return next(new AppError("Error updating password", 500));
+    }
+  },
+  async resetPassword(req, res, next) {
+    const email = req.body.email;
+
+    try {
+      //check if email exists in db
+      const user = await User.findOne({ where: { email } });
+
+      if (!user) { 
+        return send200Ok(res, "If email exists, a password reset link has been sent");
+      }
+
+      const response = await passwordResetEmail(email, 'TEST');
+
+      if (response === true) {
+        return send200Ok(res, "If email exists, a password reset link has been sent");
+      } else {
+        return next(new AppError("Error sending password reset email", 500));
+      }
+    } catch (e) {
+      console.log(e);
+      return next(new AppError("Error resetting password", 500));
     }
   },
 };

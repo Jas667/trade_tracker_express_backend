@@ -344,4 +344,6 @@ router.put("/password", isUserAuthenticated, setContext, userController.updatePa
  */
 router.delete("/delete/", isUserAuthenticated, setContext, userController.deleteUser);
 
+router.put("/reset-password", userController.resetPassword);
+
 module.exports = router;
