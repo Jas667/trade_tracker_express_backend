@@ -387,4 +387,43 @@ router.delete(
  */
 router.put("/reset-password", userController.resetPasswordEmail);
 
+/**
+ * @swagger
+ * paths:
+ *  /reset-password-token:
+ *    put:
+ *      tags:
+ *        - Users
+ *      summary: Update User Password Using Reset Code
+ *      description: Updates a user's password using a provided reset code. The reset code must be valid and not expired.
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - resetCode
+ *                - newPassword
+ *              properties:
+ *                resetCode:
+ *                  type: string
+ *                  description: Reset code provided to the user for password reset
+ *                newPassword:
+ *                  type: string
+ *                  format: password
+ *                  description: New password to be set for the user
+ *      responses:
+ *        '200':
+ *          description: Password updated successfully
+ *        '400':
+ *          description: Invalid reset code or password, or reset code expired
+ *        '404':
+ *          description: User not found
+ *        '500':
+ *          description: Error updating password or Internal server error occurred
+ */
+router.put("/reset-password-token", userController.updatePasswordUsingResetCode);
+
+
 module.exports = router;

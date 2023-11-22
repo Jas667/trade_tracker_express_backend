@@ -320,7 +320,8 @@ module.exports = {
   async resetPasswordEmail(req, res, next) {
     const email = req.body.email;
 
-    const passwordResetMessage = "If user exists with supplied email, a password reset link has been sent";
+    const passwordResetMessage =
+      "If user exists with supplied email, a password reset link has been sent. The code will expure in 15 minutes.";
 
     const transaction = await PasswordReset.sequelize.transaction();
 
@@ -330,10 +331,7 @@ module.exports = {
 
       if (!user) {
         await transaction.commit();
-        return send200Ok(
-          res,
-          passwordResetMessage
-        );
+        return send200Ok(res, passwordResetMessage);
       }
 
       //if there is a user, check if there is already a password reset token in the db. If so, delete it
@@ -368,18 +366,79 @@ module.exports = {
 
       if (response === true) {
         await transaction.commit();
-        return send200Ok(
-          res,
-          passwordResetMessage
-        );
+        return send200Ok(res, passwordResetMessage);
       } else {
         await transaction.rollback();
         return next(new AppError("Error sending password reset email", 500));
       }
     } catch (e) {
       await transaction.rollback();
-      console.log(e);
       return next(new AppError("Error resetting password", 500));
+    }
+  },
+
+  async updatePasswordUsingResetCode(req, res, next) {
+    const resetCode = req.body.resetCode;
+    const newPassword = req.body.newPassword;
+
+    const transaction = await PasswordReset.sequelize.transaction();
+
+    try {
+      //check if reset code exists in db
+      const passwordReset = await PasswordReset.findOne(
+        {
+          where: { token: resetCode },
+        },
+        { transaction }
+      );
+
+      if (!passwordReset) {
+        await transaction.commit();
+        return next(new AppError("Invalid reset code", 400));
+      }
+
+      //check if reset code has expired
+      if (passwordReset.expires_at < Date.now()) {
+        await transaction.commit();
+        return next(new AppError("Reset code has expired", 400));
+      }
+
+      //check if user exists in db
+      const user = await User.findOne(
+        {
+          where: { email: passwordReset.user_email },
+        },
+        { transaction }
+      );
+
+      if (!user) {
+        await transaction.commit();
+        return next(new AppError("User not found", 400));
+      }
+
+      //hash the new password
+      const saltRounds = parseInt(process.env.SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      //update the user password
+      await User.update(
+        { password: hashedPassword },
+        { where: { email: passwordReset.user_email } },
+        { transaction }
+      );
+
+      //delete the password reset code from
+      await PasswordReset.destroy(
+        { where: { token: resetCode } },
+        { transaction }
+      );
+
+      await transaction.commit();
+      return send200Ok(res, "Password updated");
+    } catch (e) {
+      await transaction.rollback();
+      console.log(e);
+      return next(new AppError("Error updating password", 500));
     }
   },
 };
