@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 module.exports = {
   // async..await is not allowed in global scope, must use a wrapper
-  async passwordResetEmail(email, link) {
+  async passwordResetEmail(email, resetToken) {
     try {
       const info = await transporter.sendMail({
         from: {
@@ -23,7 +23,7 @@ module.exports = {
         to: email, // list of receivers
         subject: "Password Reset", // Subject line
         text: "Password reset link for Trade Tracker", // plain text body
-        html: `<p>Below is the requested link to change your password. It will be active for 30 minutes.</p></br><p>${link}</p>`, // html body
+        html: `<p>Below is the requested code to change your password. It will be active for 15 minutes.</br></br><b>${resetToken}</b>`,
       });
       if (info.accepted.length > 0) {
         return true;

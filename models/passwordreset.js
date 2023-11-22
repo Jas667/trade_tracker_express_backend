@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "ID cannot be null" },
         },
       },
-      email: {
+      user_email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

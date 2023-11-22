@@ -32,13 +32,7 @@ module.exports = {
     });
   },
 
-  generatePasswordResetToken(userEmail) {
-    return jwt.sign(
-      { email: userEmail },
-      process.env.PASSWORD_RESET_TOKEN_SECRET,
-      {
-        expiresIn: 15 * 60, // 15 minutes
-      }
-    );
+  generatePasswordResetToken() {
+    return Math.floor(100000 + Math.random() * 900000);
   },
 };

@@ -1,10 +1,12 @@
 const User = require("../models/").User;
 const RefreshToken = require("../models/").RefreshTokens;
+const PasswordReset = require("../models/").PasswordReset;
 
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const { query } = require("express");
 const jwt = require("jsonwebtoken");
+const sequelize = require("sequelize");
 
 const { AppError } = require("../utils/errorHandler");
 
@@ -15,6 +17,9 @@ const {
   send200Ok,
   send204Deleted,
 } = require("../utils/responses");
+const {
+  generatePasswordResetToken,
+} = require("../authorisation/helperFunctions");
 
 module.exports = {
   async getUserById(req, res, next) {
@@ -312,25 +317,67 @@ module.exports = {
       return next(new AppError("Error updating password", 500));
     }
   },
-  async resetPassword(req, res, next) {
+  async resetPasswordEmail(req, res, next) {
     const email = req.body.email;
+
+    const passwordResetMessage = "If user exists with supplied email, a password reset link has been sent";
+
+    const transaction = await PasswordReset.sequelize.transaction();
 
     try {
       //check if email exists in db
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { email } }, { transaction });
 
-      if (!user) { 
-        return send200Ok(res, "If email exists, a password reset link has been sent");
+      if (!user) {
+        await transaction.commit();
+        return send200Ok(
+          res,
+          passwordResetMessage
+        );
       }
 
-      const response = await passwordResetEmail(email, 'TEST');
+      //if there is a user, check if there is already a password reset token in the db. If so, delete it
+      const passwordReset = await PasswordReset.findOne(
+        {
+          where: { user_email: email },
+        },
+        { transaction }
+      );
+
+      if (passwordReset) {
+        await PasswordReset.destroy(
+          { where: { user_email: email } },
+          { transaction }
+        );
+      }
+
+      const resetToken = generatePasswordResetToken();
+      //create date for expiry to add to db that is 15 minutes from now
+      const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+      //add to PasswordResets table
+      const passwordResetCreate = await PasswordReset.create(
+        {
+          user_email: email,
+          token: resetToken,
+          expires_at: expiryTime,
+        },
+        { transaction }
+      );
+
+      const response = await passwordResetEmail(email, resetToken);
 
       if (response === true) {
-        return send200Ok(res, "If email exists, a password reset link has been sent");
+        await transaction.commit();
+        return send200Ok(
+          res,
+          passwordResetMessage
+        );
       } else {
+        await transaction.rollback();
         return next(new AppError("Error sending password reset email", 500));
       }
     } catch (e) {
+      await transaction.rollback();
       console.log(e);
       return next(new AppError("Error resetting password", 500));
     }

@@ -82,7 +82,6 @@ Currently the .env file should be set with the following variables. The values p
 ``````
 TOKEN_SECRET=secret
 REFRESH_TOKEN_SECRET=secret
-PASSWORD_RESET_TOKEN_SECRET=secret
 CORS_ORIGIN=http://localhost:5173
 ALLOWED_EMBED_ORIGIN=http://localhost:5173
 
