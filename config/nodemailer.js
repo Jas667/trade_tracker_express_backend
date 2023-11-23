@@ -22,7 +22,7 @@ module.exports = {
         },
         to: email, // list of receivers
         subject: "Password Reset", // Subject line
-        text: "Password reset link for Trade Tracker", // plain text body
+        text: "Password reset code for Trade Tracker", // plain text body
         html: `<p>Below is the requested code to change your password. It will be active for 15 minutes.</br></br><b>${resetToken}</b>`,
       });
       if (info.accepted.length > 0) {

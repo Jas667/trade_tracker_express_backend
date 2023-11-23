@@ -423,7 +423,7 @@ router.put("/reset-password", userController.resetPasswordEmail);
  *        '500':
  *          description: Error updating password or Internal server error occurred
  */
-router.put("/reset-password-token", userController.updatePasswordUsingResetCode);
+router.put("/reset-password-token", userLimiter, userController.updatePasswordUsingResetCode);
 
 
 module.exports = router;
