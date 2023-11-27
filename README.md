@@ -6,7 +6,7 @@ Currently the application is set to work with postgresql, but can be extended to
 
 Designed to accept a csv file from TradeZero in order to populate the database with trades. The csv file can be uploaded using the API for testing.
 
-The app is currently deployed to Railway.app and is set up to work as such. The older version of the app was designed to run on my localhost, which is what most of the documentation below is based on. See the demo section below for more information.
+The app is currently deployed to Railway.app and is set up to work as such. You can also run the app (frontent and backend) on localhost.
 
 ## Frontend Example
 
@@ -66,7 +66,7 @@ npm run dbmigrateundo
 The application is currently set to run on port 3000. You can change this in the config.json file. To run the application, simply run the following command:
 
 ```
-npm start
+npm start (or npm run dev to run with nodemon)
 ```
 
 ## Authentication and Authorisation
@@ -74,6 +74,25 @@ npm start
 In order to use most of the routes, you will need to be authenticated and authorised. If using the seed data, you can use the example information provided at the swagger Authentication/User Login route. This will provide a JWT token stored in a cookie that will be used to authenticate and authorise you for the other routes. 
 
 You can also create your own user using the swagger user/register User route.
+
+If running on localhost and using the frontend, there is a registration option. However, it is currently disabled. You can enable it by removing the following lines of code in the userController.js file:
+
+```
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      //REMOVE THIS FOR PRODUCTION, THIS SETTING IS TO DISABLE FOR TESTING PURPOSES
+      return res.status(401).send("Registration disabled for testing purposes");
+```
+
+There is also a section in the tradeDetailsController which stops the current TestUser from being able to upload a csv file. You can remove this by removing the following lines of code in the tradeDetailsController.js file:
+
+```
+    if (req.userId === "5cc82ad8-3763-491c-a792-99411fbcb8ef") {
+      deleteFile(filePath);
+      return next(new AppError("Uploads not available for test users", 403));
+    }
+```
 
 ## Environment Variables
 
